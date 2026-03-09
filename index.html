@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Clinica Rosa</title>
+
+<style>
+body{
+background:black;
+color:#00ff00;
+font-family:Consolas,monospace;
+margin:0;
+}
+
+#terminal{
+padding:20px;
+white-space:pre-wrap;
+min-height:90vh;
+}
+
+#inputArea{
+display:flex;
+padding:10px;
+}
+
+input{
+background:black;
+color:#00ff00;
+border:none;
+outline:none;
+font-family:Consolas;
+width:100%;
+font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="terminal"></div>
+
+<div id="inputArea">
+<span>></span>
+<input id="input" autocomplete="off">
+</div>
+
+<script>
+
+let terminal=document.getElementById("terminal")
+let input=document.getElementById("input")
+
+input.focus()
+
+document.body.addEventListener("click",()=>input.focus())
+
+let modo="menu"
+let especialidad=""
+let nombre=""
+
+let especialidades=[
+"Oncología",
+"Otorrinolaringología",
+"Cardiología",
+"Maternidad",
+"General"
+]
+
+let baseDatos=JSON.parse(localStorage.getItem("citasClinica")) || []
+
+function guardarDatos(){
+localStorage.setItem("citasClinica",JSON.stringify(baseDatos))
+}
+
+function clear(){
+terminal.innerHTML=""
+}
+
+function print(txt){
+terminal.innerHTML+=txt+"\n"
+}
+
+function menu(){
+
+clear()
+
+print("==============================================")
+print("Bienvenido al sistema de la Clinica Rosa")
+print("==============================================")
+print("1- Agendar una Cita")
+print("2- Consultar Citas")
+print("3- Contactar Administración")
+print("4- Salir")
+print("==============================================")
+print("Ingrese una opción:")
+
+modo="menu"
+
+}
+
+menu()
+
+input.addEventListener("keydown",function(e){
+
+if(e.key==="Enter"){
+
+let valor=input.value
+input.value=""
+
+switch(modo){
+
+case "menu":
+
+let op=parseInt(valor)
+
+if(op===1){
+
+clear()
+
+print("Seleccione la Especialidad")
+print("================================")
+
+for(let i=0;i<especialidades.length;i++){
+print((i+1)+"- "+especialidades[i])
+}
+
+print("6- Regresar")
+print("================================")
+print("Ingrese una opción")
+
+modo="especialidad"
+
+}
+
+else if(op===2){
+
+clear()
+
+print("------ Citas Agendadas ------")
+
+if(baseDatos.length===0){
+print("No hay citas registradas")
+}else{
+
+baseDatos.forEach(c=>{
+print("Consulta #"+c.num+" | Paciente: "+c.nombre+" | DUI: "+c.dui+" | Especialidad: "+c.especialidad)
+})
+
+}
+
+print("\nPresione ENTER para volver")
+modo="volver"
+
+}
+
+else if(op===3){
+
+clear()
+
+print("Contactando Administración...")
+print("La administración no está disponible.")
+print("\nPresione ENTER para volver")
+
+modo="volver"
+
+}
+
+else if(op===4){
+
+clear()
+print("Gracias por usar el sistema")
+
+}
+
+else{
+
+print("Opción inválida")
+
+}
+
+break
+
+
+case "especialidad":
+
+let esp=parseInt(valor)
+
+if(esp>=1 && esp<=5){
+
+especialidad=especialidades[esp-1]
+
+print("\nIngrese su nombre completo:")
+modo="nombre"
+
+}
+
+else if(esp===6){
+
+menu()
+
+}
+
+else{
+
+print("Opción inválida")
+
+}
+
+break
+
+
+case "nombre":
+
+nombre=valor
+print("Ingrese su DUI:")
+modo="dui"
+
+break
+
+
+case "dui":
+
+let dui=valor
+
+if(baseDatos.length>=5){
+
+print("\n[ERROR]: Ya hay 5 citas registradas")
+
+}else{
+
+let numConsulta=Math.floor(Math.random()*90000)+10000
+
+baseDatos.push({
+nombre:nombre,
+dui:dui,
+especialidad:especialidad,
+num:numConsulta
+})
+
+guardarDatos()
+
+print("\nCita agendada con éxito")
+print("Número de consulta: "+numConsulta)
+
+}
+
+print("\nPresione ENTER para volver")
+modo="volver"
+
+break
+
+
+case "volver":
+
+menu()
+
+break
+
+}
+
+input.focus()
+
+}
+
+})
+
+</script>
+
+</body>
+</html>
