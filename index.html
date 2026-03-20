@@ -65,11 +65,8 @@ let especialidades=[
 "General"
 ]
 
-let baseDatos=JSON.parse(localStorage.getItem("citasClinica")) || []
-
-function guardarDatos(){
-localStorage.setItem("citasClinica",JSON.stringify(baseDatos))
-}
+// 🔥 Ahora solo en memoria
+let baseDatos=[]
 
 function clear(){
 terminal.innerHTML=""
@@ -235,8 +232,6 @@ dui:dui,
 especialidad:especialidad,
 num:numConsulta
 })
-
-guardarDatos()
 
 print("\nCita agendada con éxito")
 print("Número de consulta: "+numConsulta)
